@@ -1,0 +1,247 @@
+<html>
+  <head>
+  <script src='file:///android_asset/app.js'></script>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" async="async"></script>
+    <script type="text/javascript">
+    
+    // Load the Visualization API and the piechart package.
+    google.charts.load('current', {'packages':['corechart', 'table']});
+      
+      function drawToolbar() {
+      var components = [
+          {type: 'igoogle', datasource: 'https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk',
+           gadget: 'https://www.google.com/ig/modules/pie-chart.xml',
+           userprefs: {'3d': 1}},
+          {type: 'html', datasource: 'https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk'},
+          {type: 'csv', datasource: 'https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk'},
+          {type: 'htmlcode', datasource: 'https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk',
+           gadget: 'https://www.google.com/ig/modules/pie-chart.xml',
+           userprefs: {'3d': 1},
+           style: 'width: 800px; height: 70px; border: 3px solid purple;'}
+      ];
+
+      var container = document.getElementById('toolbar_div');
+      google.visualization.drawToolbar(container, components);
+    };
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+      
+    function drawChart() {
+      /*var jsonData = $.ajax({
+          url: "getData.json",
+          dataType: "json",
+          async: false
+          }).responseText;
+          
+      // Create our data table out of JSON data loaded from server.
+      var data = new google.visualization.DataTable(jsonData);
+*/
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+      //chart.draw(data, {width: 400, height: 0});
+      initialize();
+      initialize2();
+      initialize3();
+      drawToolbar();
+      app.Start();
+    }
+
+
+function initialize() {
+  var opts = {sendMethod: 'auto'};
+  // Replace the data source URL on next line with your data source URL.
+  //var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/178XEnDtv7XnyfnapSPjiidReyqEBRsRmoNm_OBI7Tfk/edit?usp=drivesdk', opts);
+  var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk', opts);
+
+  
+  //http://spreadsheets.google.com?key=123AB&...', opts);
+
+  // Optional request to return only column C and the sum of column B, grouped by C members.
+  query.setQuery('SELECT I, COUNT(A) group By I');//sum(B) group by C');
+
+  // Send the query with a callback function.
+  query.send(handleQueryResponse);
+  //alert("Init");
+}
+
+/*function handleQueryResponse(response) {
+  // Called when the query response is returned.
+  ...
+}
+*/
+function handleQueryResponse(response) {
+
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+
+  data1 = response.getDataTable();
+  chart1 = new google.visualization.PieChart(document.getElementById('chart_div1'));
+  chart1.draw(data1, {width: 360, height: 260, is3D: false, pieHole: 0.35, legend: 'bottom', title: 'Bitches Count By Citizenship'});
+  google.visualization.events.addListener(chart1, 'select', function() {
+    row = chart1.getSelection()[0].row;
+    val = data1.getValue(row, 0);
+    //alert(val);
+    opts = {sendMethod: 'auto'};
+    query3 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk', opts);
+    query3.setQuery("select A, B, C, D, E WHERE I = '" + val + "'");//sum(B) group by C');
+
+  // Send the query with a callback function.
+  query3.send(handleQueryResponse3);
+  });
+}
+
+function initialize2() {
+  var opts = {sendMethod: 'auto'};
+  // Replace the data source URL on next line with your data source URL.
+  //var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/178XEnDtv7XnyfnapSPjiidReyqEBRsRmoNm_OBI7Tfk/edit?usp=drivesdk', opts);
+  var query2 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk', opts);
+
+  
+  //http://spreadsheets.google.com?key=123AB&...', opts);
+
+  // Optional request to return only column C and the sum of column B, grouped by C members.
+  query2.setQuery('select A, B, C, D, E Limit 15');//sum(B) group by C');
+
+  // Send the query with a callback function.
+  query2.send(handleQueryResponse2);
+  //alert("Init");
+  //alert(query2.getDataSourceUrl());
+}
+
+/*function handleQueryResponse(response) {
+  // Called when the query response is returned.
+  ...
+}
+*/
+function handleQueryResponse2(response) {
+
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+
+  data2 = response.getDataTable();
+  csv2 = new google.visualization.dataTableToCsv(data2);
+  //document.getElementById('csv').innerHTML = "" + csv2.split("\r")[0];
+  chart2 = new google.visualization.CandlestickChart(document.getElementById('chart_div2'));
+  chart2.draw(data2, {width: 360, height: 370, is3D: true, title: 'Bitches Count By Citizenship'});
+  google.visualization.events.addListener(chart2, 'select', function() {
+    row = chart2.getSelection()[0].row;
+    val = data2.getValue(row, 0);
+    alert(val);
+    /*app.WriteFile( "DataTable.json", JSON.stringify(response.getDataTable()) );
+    var aa = new Array();
+    for(item in response)
+    {
+    	aa.push(item);
+    }
+    */
+    //app.SetClipboardText( aa.sort().join("\r") );
+    //alert(chart2.getDataSourceUrl());
+    });
+    
+}
+
+function handleQueryResponse3(response) {
+
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+
+  data2 = response.getDataTable();
+  //csv2 = new Array();
+//csv2 = new google.visualization.dataTableToCsv(data2);
+  //alert(csv2.split("\r")[1]);
+  chart2 = new google.visualization.BubbleChart(document.getElementById('chart_div2'));
+  chart2.draw(data2, {width: 360, height: 370, is3D: true, title: 'Bitches from ' + val});
+  google.visualization.events.addListener(chart2, 'select', function() {
+    row = chart2.getSelection()[0].row;
+    val = data2.getValue(row, 0);
+    alert(val);
+    /*app.WriteFile( "DataTable.json", JSON.stringify(response.getDataTable()) );
+    var aa = new Array();
+    for(item in response)
+    {
+    	aa.push(item);
+    }
+    */
+    //app.SetClipboardText( aa.sort().join("\r") );
+    //alert(chart2.getDataSourceUrl());
+    });
+    
+}
+
+function initialize3() {
+  var opts = {sendMethod: 'auto'};
+  // Replace the data source URL on next line with your data source URL.
+  //var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/178XEnDtv7XnyfnapSPjiidReyqEBRsRmoNm_OBI7Tfk/edit?usp=drivesdk', opts);
+  var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk', opts);
+
+  
+  //http://spreadsheets.google.com?key=123AB&...', opts);
+
+  // Optional request to return only column C and the sum of column B, grouped by C members.
+  query.setQuery('SELECT J, COUNT(A) group By J');//sum(B) group by C');
+
+  // Send the query with a callback function.
+  query.send(handleQueryResponse4);
+  //alert("Init");
+}
+
+/*function handleQueryResponse(response) {
+  // Called when the query response is returned.
+  ...
+}
+*/
+function handleQueryResponse4(response) {
+
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+
+  data4 = response.getDataTable();
+  chart4 = new google.visualization.BarChart(document.getElementById('chart_div4'));
+  chart4.draw(data4, {width: 360, height: 260, is3D: true, pieHole: 0.35, legend: 'bottom', title: 'Bitches Count By Job'});
+  google.visualization.events.addListener(chart4, 'select', function() {
+    row = chart4.getSelection()[0].row;
+    val = data4.getValue(row, 0);
+    //alert(val);
+    opts = {sendMethod: 'auto'};
+    query3 = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE/edit?usp=drivesdk', opts);
+    query3.setQuery("select A, B, C, D, E WHERE J = '" + val + "'");//sum(B) group by C');
+
+  // Send the query with a callback function.
+  query3.send(handleQueryResponse3);
+  });
+}
+
+    </script>
+    <style>
+    #chart_div {
+    	height: 0px;
+    }
+    body {
+    	background-color: #ffffff;
+    }
+    </style>
+  </head>
+
+  <body>
+    <!--Div that will hold the pie chart-->
+    <div id="toolbar_div"></div>
+    <div id="chart_div"></div>
+    <div id="chart_div1"></div>
+    <div id="chart_div4"></div>
+    <div id="chart_div2"></div>
+    <div id="csv" runat="server"></div>
+    
+    <iframe style="width: 800px; height: 70px; border: 3px solid purple;" src="http://www.google.com/ig/ifr?url=https%3A%2F%2Fwww.google.com%2Fig%2Fmodules%2Fpie-chart.xml&up__table_query_url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1GLoJfcE7r61zUNxGg17pvSY3hwNg410CEhe0q3bVzyE%2Fedit%3Fusp%3Ddrivesdk&up_3d=1" />
+  </body>
+</html>
